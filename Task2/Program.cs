@@ -13,7 +13,7 @@ namespace Task2
 
             for (int i0 = 0; i0 < maze.GetLength(0); i0++)
                 for (int i1 = 0; i1 < maze.GetLength(1); i1++)
-                    visited[i0, i1] = maze[i0, i1] == 0? (bool?)true: null;
+                    visited[i0, i1] = maze[i0, i1] == 0? (bool?)null: false;
 
             int price;
             step(startX, startY, endX, endY, maze, visited, out price);
@@ -29,21 +29,21 @@ namespace Task2
                 return;
 
             int priceMin = short.MaxValue;
-            if (visited[posX + 1, posY] != true)
+            if (posX + 1 < maze.GetLength(0) && visited[posX + 1, posY] == false)
                 step((ushort)(posX + 1), posY, endX, endY, maze, visited, out priceMin);
 
             int priceP = short.MaxValue;
-            if (visited[posX - 1, posY] != true)
+            if (posX - 1 >= 0 && visited[posX - 1, posY] == false)
                 step((ushort)(posX - 1), posY, endX, endY, maze, visited, out priceP);
             if (priceP < priceMin)
                 priceMin = priceP;
 
-            if (visited[posX, posY - 1] != true)
+            if (posY - 1 >= 0 && visited[posX, posY - 1] == false)
                 step(posX, (ushort)(posY - 1), endX, endY, maze, visited, out priceP);
             if (priceP < priceMin)
                 priceMin = priceP;
 
-            if (visited[posX, posY + 1] != true)
+            if (posY + 1 < maze.GetLength(1) && visited[posX, posY + 1] == false)
                 step(posX, (ushort)(posY + 1), endX, endY, maze, visited, out priceP);
             if (priceP < priceMin)
                 priceMin = priceP;
@@ -59,7 +59,7 @@ namespace Task2
             string[] arr;
             {
                 string input;
-                using (var fs = new FileStream("INPUT.TXT", FileMode.Open))
+                using (var fs = new FileStream("INPUT.TXT", FileMode.OpenOrCreate))
                 {
                     using (var sr = new StreamReader(fs))
                     {
@@ -122,7 +122,7 @@ namespace Task2
 
                     if (result == 0)
                         sw.Write("Sleep");
-                    sw.Write(result);
+                    else sw.Write(result);
                 }
             }
         }
