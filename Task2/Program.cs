@@ -5,55 +5,76 @@ using System.Linq;
 
 namespace Task2
 {
-    class Program
+    public class Solver
     {
-        static int Solve(ushort startX, ushort startY, ushort endX, ushort endY, short[,] maze)
-        {
-            var visited = new bool?[maze.GetLength(0), maze.GetLength(1)];
+        private ushort startX;
+        private ushort startY;
 
+        private ushort endX;
+        private ushort endY;
+
+        private short[,] maze;
+        private bool?[,] visited;
+        public List<int> solutions = new List<int>(0);
+
+        public Solver(ushort startX, ushort startY, ushort endX, ushort endY, short[,] maze)
+        {
+            this.maze = maze;
+            visited = new bool?[maze.GetLength(0), maze.GetLength(1)];
             for (int i0 = 0; i0 < maze.GetLength(0); i0++)
                 for (int i1 = 0; i1 < maze.GetLength(1); i1++)
-                    visited[i0, i1] = maze[i0, i1] == 0? (bool?)null: false;
+                    visited[i0, i1] = maze[i0, i1] == -1? (bool?)true: null;
 
-            int price;
-            step(startX, startY, endX, endY, maze, visited, out price);
-            return price;
+            this.startX = startX;
+            this.startY = startY;
+            this.endX = endX;
+            this.endY = endY;
         }
-        static void step(ushort posX, ushort posY, ushort endX, ushort endY, 
-            short[,] maze, bool?[,] visited, out int price)
+
+        public int startstep()
         {
-            visited[posX, posY] = true;
+            int result;
+            step(startX, startY, out result);
+            return result;
+        }
+        public void step(ushort posX, ushort posY, out int price)
+        {
             price = maze[posX, posY];
 
-            if(posX == endX && posY == endY)
+            if (visited[posX, posY] == true)
                 return;
+            visited[posX, posY] = true;
 
-            int priceMin = short.MaxValue;
-            if (posX + 1 < maze.GetLength(0) && visited[posX + 1, posY] == false)
-                step((ushort)(posX + 1), posY, endX, endY, maze, visited, out priceMin);
+            if (posX == endX && posY == endY)
+            {
+                visited[posX, posY] = false;
+                return;
+            }
+
+            var priceMin = new int[4];
+            priceMin[0] = stepfast(posX, posY, 1, 0);
+            priceMin[1] = stepfast(posX, posY, 0, 1);
+            priceMin[2] = stepfast(posX, posY, -1, 0);
+            priceMin[3] = stepfast(posX, posY, 0, -1);
+
+            price += priceMin.Min();
+        }
+        private int stepfast(ushort posX, ushort posY, sbyte x, sbyte y)
+        {
+            if (visited[posX + x, posY + y] == true)
+                return short.MaxValue;
 
             int priceP = short.MaxValue;
-            if (posX - 1 >= 0 && visited[posX - 1, posY] == false)
-                step((ushort)(posX - 1), posY, endX, endY, maze, visited, out priceP);
-            if (priceP < priceMin)
-                priceMin = priceP;
-
-            if (posY - 1 >= 0 && visited[posX, posY - 1] == false)
-                step(posX, (ushort)(posY - 1), endX, endY, maze, visited, out priceP);
-            if (priceP < priceMin)
-                priceMin = priceP;
-
-            if (posY + 1 < maze.GetLength(1) && visited[posX, posY + 1] == false)
-                step(posX, (ushort)(posY + 1), endX, endY, maze, visited, out priceP);
-            if (priceP < priceMin)
-                priceMin = priceP;
-
-            if (priceMin == short.MaxValue || priceMin == 0)
-                price = 0;
-            else
-                price += priceMin;
+            if ((posX + x < maze.GetLength(0) || posY + y < maze.GetLength(1))
+                && (posX + x >= 0 || posY + y >= 0))
+                step((ushort)(posX + x), (ushort)(posY + y), out priceP);
+            
+            return priceP;
         }
+    }
 
+    class Program
+    {
         static void Main(string[] args)
         {
             string[] arr;
@@ -77,11 +98,11 @@ namespace Task2
             for (ushort i0 = 0; i0 < fieldArray.GetLength(0); i0++)
                 for (ushort i1 = 0; i1 < fieldArray.GetLength(1); i1++)
                 {
-                    switch (arr[i0+2][i1])
+                    switch (arr[i0 + 2][i1])
                     {
                         case '.':
                             fieldArray[i0, i1] = 0;
-                        break;
+                            break;
                         case 'S':
                             fieldArray[i0, i1] = 0;
                             startX = i0;
@@ -94,24 +115,25 @@ namespace Task2
                             break;
                         case 'X':
                             fieldArray[i0, i1] = -1;
-                        break;
+                            break;
 
                         case 'R':
                             fieldArray[i0, i1] = dims[0];
-                        break;
+                            break;
                         case 'G':
                             fieldArray[i0, i1] = dims[1];
-                        break;
+                            break;
                         case 'B':
                             fieldArray[i0, i1] = dims[2];
-                        break;
+                            break;
                         case 'Y':
                             fieldArray[i0, i1] = dims[3];
-                        break;
+                            break;
                     }
                 }
 
-            int result = Solve(startX, startY, endX, endY, fieldArray);
+            var res = new Solver(startX, startY, endX, endY, fieldArray);
+            int result = res.startstep();
 
 
 
@@ -120,9 +142,10 @@ namespace Task2
                 using (var sw = new StreamWriter(fs))
                 {
 
-                    if (result == 0)
+                    if (result == 0 || result == short.MaxValue)
                         sw.Write("Sleep");
-                    else sw.Write(result);
+                    else
+                        sw.Write(result);
                 }
             }
         }
