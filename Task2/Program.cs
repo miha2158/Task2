@@ -7,23 +7,22 @@ namespace Task2
 {
     public class Solver
     {
-        private ushort startX;
-        private ushort startY;
+        private int startX;
+        private int startY;
 
-        private ushort endX;
-        private ushort endY;
+        private int endX;
+        private int endY;
 
         private short[,] maze;
-        private bool?[,] visited;
-        public List<int> solutions = new List<int>(0);
+        private bool[,] visited;
 
-        public Solver(ushort startX, ushort startY, ushort endX, ushort endY, short[,] maze)
+        public Solver(int startX, int startY, int endX, int endY, short[,] maze)
         {
             this.maze = maze;
-            visited = new bool?[maze.GetLength(0), maze.GetLength(1)];
+            visited = new bool[maze.GetLength(0), maze.GetLength(1)];
             for (int i0 = 0; i0 < maze.GetLength(0); i0++)
                 for (int i1 = 0; i1 < maze.GetLength(1); i1++)
-                    visited[i0, i1] = maze[i0, i1] == -1? (bool?)true: null;
+                    visited[i0, i1] = maze[i0, i1] == -1;
 
             this.startX = startX;
             this.startY = startY;
@@ -37,11 +36,11 @@ namespace Task2
             step(startX, startY, out result);
             return result;
         }
-        public void step(ushort posX, ushort posY, out int price)
+        public void step(int posX, int posY, out int price)
         {
             price = maze[posX, posY];
 
-            if (visited[posX, posY] == true)
+            if (visited[posX, posY])
                 return;
             visited[posX, posY] = true;
 
@@ -59,15 +58,15 @@ namespace Task2
             
             price += priceMin.Min();
         }
-        private int stepfast(ushort posX, ushort posY, sbyte x, sbyte y)
+        private int stepfast(int posX, int posY, int x, int y)
         {
-            if (visited[posX + x, posY + y] == true)
-                return short.MaxValue;
+            if (visited[posX + x, posY + y])
+                return int.MaxValue;
 
-            int priceP = short.MaxValue;
+            int priceP = int.MaxValue;
             if ((posX + x < maze.GetLength(0) || posY + y < maze.GetLength(1))
                 && (posX + x >= 0 || posY + y >= 0))
-                step((ushort)(posX + x), (ushort)(posY + y), out priceP);
+                step(posX + x, posY + y, out priceP);
             
             return priceP;
         }
@@ -94,12 +93,12 @@ namespace Task2
             var dims = arr[0].Split(' ').Select(i => short.Parse(i)).ToArray();
 
             var fieldArray = new short[dims[0], dims[1]];
-            ushort startX = 0, startY = 0, endX = 0, endY = 0;
+            int startX = 0, startY = 0, endX = 0, endY = 0;
 
             dims = arr[1].Split(' ').Select(i => short.Parse(i)).ToArray();
 
-            for (ushort i0 = 0; i0 < fieldArray.GetLength(0); i0++)
-                for (ushort i1 = 0; i1 < fieldArray.GetLength(1); i1++)
+            for (int i0 = 0; i0 < fieldArray.GetLength(0); i0++)
+                for (int i1 = 0; i1 < fieldArray.GetLength(1); i1++)
                 {
                     switch (arr[i0 + 2][i1])
                     {
