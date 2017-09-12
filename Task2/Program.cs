@@ -144,7 +144,7 @@ namespace Task2
                 using (var sw = new StreamWriter(fs))
                 {
 
-                    if (result == 0 || result == short.MaxValue)
+                    if (result == 0 || result == int.MaxValue)
                         sw.Write("Sleep");
                     else
                         sw.Write(result);
