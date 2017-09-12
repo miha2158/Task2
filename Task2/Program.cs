@@ -56,7 +56,7 @@ namespace Task2
             priceMin[1] = stepfast(posX, posY, 0, 1);
             priceMin[2] = stepfast(posX, posY, -1, 0);
             priceMin[3] = stepfast(posX, posY, 0, -1);
-
+            
             price += priceMin.Min();
         }
         private int stepfast(ushort posX, ushort posY, sbyte x, sbyte y)
@@ -90,11 +90,14 @@ namespace Task2
                 arr = input.Split('\n');
                 arr = arr.Select(str => str.Trim()).Where(s => s != string.Empty).ToArray();
             }
-            var dims = arr[0].Split(' ').Select(short.Parse).ToArray();
-            short[,] fieldArray = new short[dims[0], dims[1]];
 
+            var dims = arr[0].Split(' ').Select(i => short.Parse(i)).ToArray();
+
+            var fieldArray = new short[dims[0], dims[1]];
             ushort startX = 0, startY = 0, endX = 0, endY = 0;
-            dims = arr[1].Split(' ').Select(short.Parse).ToArray();
+
+            dims = arr[1].Split(' ').Select(i => short.Parse(i)).ToArray();
+
             for (ushort i0 = 0; i0 < fieldArray.GetLength(0); i0++)
                 for (ushort i1 = 0; i1 < fieldArray.GetLength(1); i1++)
                 {
