@@ -144,21 +144,10 @@ namespace Task2
                             break;
                     }
                 }
-            /*
-            for (int i0 = 0; i0 < fieldArray.GetLength(0); i0++)
-            {
-                for (int i1 = 0; i1 < fieldArray.GetLength(1); i1++)
-                    if(fieldArray[i0, i1] == -1)
-                        Console.Write("{0} ", fieldArray[i0, i1]);
-                else Console.Write(" {0} ", fieldArray[i0, i1]);
-                Console.WriteLine();
-            }
-            */
+
             var res = new Solver(startX, startY, endX, endY, fieldArray);
             int result = res.startstep();
-
-
-
+            
             using (var fs = new FileStream("OUTPUT.TXT", FileMode.Create))
             {
                 using (var sw = new StreamWriter(fs))
